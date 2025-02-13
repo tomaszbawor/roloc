@@ -14,3 +14,10 @@ You can make a commit by using commitizen to follow conventional commits
 ```bash
 cz commmit
 ```
+
+## Running
+To run application you must execute 
+
+```bash
+cargo run -- {path_to_img}
+```
