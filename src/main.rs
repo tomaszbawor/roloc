@@ -1,7 +1,26 @@
-use color_thief::{get_palette, ColorFormat};
-use image::GenericImageView;
+use image::{DynamicImage, GenericImageView, Pixel};
+use std::collections::HashMap;
 use std::env;
 use std::path::Path;
+
+fn get_palette(img: &DynamicImage, color_count: usize) -> Vec<(u8, u8, u8)> {
+    let mut color_map: HashMap<(u8, u8, u8), usize> = HashMap::new();
+
+    for pixel in img.pixels() {
+        let rgb = pixel.2.to_rgb();
+        let color = (rgb[0], rgb[1], rgb[2]);
+        *color_map.entry(color).or_insert(0) += 1;
+    }
+
+    let mut sorted_colors: Vec<_> = color_map.into_iter().collect();
+    sorted_colors.sort_by(|a, b| b.1.cmp(&a.1));
+
+    sorted_colors
+        .into_iter()
+        .take(color_count)
+        .map(|(color, _)| color)
+        .collect()
+}
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -21,26 +40,16 @@ fn main() {
         }
     };
 
-    // Convert image to raw RGB bytes
-    let (_width, _height) = img.dimensions();
-    let img_bytes = img.to_rgb8().into_raw();
-
     // Extract color palette
-    match get_palette(&img_bytes, ColorFormat::Rgb, 8, 16) {
-        Ok(palette) => {
-            println!("Generated 16-color palette:");
-            for (i, color) in palette.iter().enumerate() {
-                println!(
-                    "Color {}: #{:02X}{:02X}{:02X}",
-                    i + 1,
-                    color.r,
-                    color.g,
-                    color.b
-                );
-            }
-        }
-        Err(err) => {
-            eprintln!("Failed to extract colors: {}", err);
-        }
+    let palette = get_palette(&img, 16);
+    println!("Generated 16-color palette:");
+    for (i, color) in palette.iter().enumerate() {
+        println!(
+            "Color {}: #{:02X}{:02X}{:02X}",
+            i + 1,
+            color.0,
+            color.1,
+            color.2
+        );
     }
 }

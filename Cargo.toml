@@ -4,5 +4,4 @@ version = "0.3.0"
 edition = "2021"
 
 [dependencies]
-color-thief = "0.2.2"
 image = "0.25.5"
