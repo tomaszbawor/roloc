@@ -21,3 +21,7 @@ To run application you must execute
 ```bash
 cargo run -- {path_to_img}
 ```
+
+## Interesing reading 
+- [Color quantization using octrees](http://www.leptonica.org/papers/colorquant.pdf)
+- [Color quantization using modified median cut](https://web.archive.org/web/20190202154003/http://www.leptonica.com/papers/mediancut.pdf)
