@@ -24,32 +24,46 @@ cargo run -- {path_to_img}
 
 # Pallete extraction algorithms by Chat GPT
 
-Histogram (Most Frequent Colors) – Counts pixel occurrences and selects the most common colors.
+1. Histogram (Most Frequent Colors) – Counts pixel occurrences and selects the most common colors.
+
 ✅ Fast, exact colors from the image.
+
 ❌ Sensitive to noise and large uniform areas.
 
-K-means Clustering – Groups similar colors into a fixed number of clusters.
+2. K-means Clustering – Groups similar colors into a fixed number of clusters.
+
 ✅ Produces aesthetically pleasing palettes.
+
 ❌ Slower, depends on initial cluster selection.
 
-Octree Quantization – Builds a hierarchical color tree to find representative colors.
+3. Octree Quantization – Builds a hierarchical color tree to find representative colors.
+
 ✅ Efficient for color reduction, used in image compression.
+
 ❌ May not work well with small palettes.
 
-Median Cut – Recursively divides color space to select representative colors.
+4. Median Cut – Recursively divides color space to select representative colors.
+
 ✅ Works well for diverse images.
+
 ❌ Sometimes produces unnatural results.
 
-Mean Shift Clustering – Detects dense color regions without predefined cluster count.
+5. Mean Shift Clustering – Detects dense color regions without predefined cluster count.
+
 ✅ Adapts to image content dynamically.
+
 ❌ Slower and memory-intensive.
 
-Self-Organizing Map (SOM) – Uses a neural network to map colors into clusters.
+5. Self-Organizing Map (SOM) – Uses a neural network to map colors into clusters.
+
 ✅ Captures color variations effectively.
+
 ❌ Complex and requires more computation.
 
-Principal Component Analysis (PCA) – Reduces color dimensions and extracts dominant variations.
+6. Principal Component Analysis (PCA) – Reduces color dimensions and extracts dominant variations.
+
 ✅ Removes noise, finds key color patterns.
+
 ❌ Less intuitive and harder to implement.
 
 # Interesing reading 
