@@ -1,34 +1,11 @@
 use clap::{Arg, Command};
 
 use image::GenericImageView;
-use rand::prelude::*;
-use serde::Serialize;
+use roloc::{k_means, RgbColor};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
 use std::path::Path;
-
-// A simple struct for storing color data in RGB.
-#[derive(Debug, Clone, Copy, Serialize)]
-struct RgbColor {
-    r: f32,
-    g: f32,
-    b: f32,
-}
-
-impl RgbColor {
-    fn distance_squared(&self, other: &RgbColor) -> f32 {
-        (self.r - other.r).powi(2) + (self.g - other.g).powi(2) + (self.b - other.b).powi(2)
-    }
-
-    // Convert an RgbColor (0-255 in f32 form) to a hex string
-    fn to_hex(&self) -> String {
-        let r = self.r as u8;
-        let g = self.g as u8;
-        let b = self.b as u8;
-        format!("#{:02X}{:02X}{:02X}", r, g, b)
-    }
-}
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches = Command::new("roloc")
@@ -96,75 +73,6 @@ fn main() -> Result<(), Box<dyn Error>> {
     }
 
     Ok(())
-}
-
-/// * `data` is the list of all pixel colors.
-/// * `k` is the number of clusters.
-/// * `max_iterations` is the maximum number of iterations for K-means.
-///
-/// Returns a vector of length `k` containing the final cluster centers.
-fn k_means(
-    data: &[RgbColor],
-    k: usize,
-    max_iterations: usize,
-) -> Result<Vec<RgbColor>, Box<dyn Error>> {
-    if data.is_empty() {
-        return Err("No data found in the image.".into());
-    }
-
-    if k == 0 {
-        return Err("Number of clusters (k) must be > 0.".into());
-    }
-
-    // Initialize cluster centers randomly from the data
-    let mut rng = thread_rng();
-    let mut centers = Vec::new();
-    for _ in 0..k {
-        let random_pixel = data[rng.gen_range(0..data.len())];
-        centers.push(random_pixel);
-    }
-
-    // Repeatedly assign points to the nearest cluster and recalc centers
-    for _ in 0..max_iterations {
-        // Create k buckets to hold assigned pixels
-        let mut clusters = vec![Vec::new(); k];
-
-        // Assign each pixel to the closest center
-        for &pixel in data {
-            let mut min_dist = f32::MAX;
-            let mut closest_center = 0;
-            for (i, &center) in centers.iter().enumerate() {
-                let dist = pixel.distance_squared(&center);
-                if dist < min_dist {
-                    min_dist = dist;
-                    closest_center = i;
-                }
-            }
-            clusters[closest_center].push(pixel);
-        }
-
-        // Recompute centers
-        let mut new_centers = Vec::with_capacity(k);
-        for cluster in clusters {
-            if cluster.is_empty() {
-                // If a cluster is empty, pick a random data point as the new center
-                new_centers.push(data[rng.gen_range(0..data.len())]);
-            } else {
-                let sum_r: f32 = cluster.iter().map(|c| c.r).sum();
-                let sum_g: f32 = cluster.iter().map(|c| c.g).sum();
-                let sum_b: f32 = cluster.iter().map(|c| c.b).sum();
-                let count = cluster.len() as f32;
-                new_centers.push(RgbColor {
-                    r: sum_r / count,
-                    g: sum_g / count,
-                    b: sum_b / count,
-                });
-            }
-        }
-        centers = new_centers;
-    }
-
-    Ok(centers)
 }
 
 /// Generate an SVG file displaying the colors along with their hex codes.

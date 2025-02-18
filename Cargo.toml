@@ -9,3 +9,10 @@ image = "0.24"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 rand = "0.8"
+
+[dev-dependencies]
+criterion = "0.5"
+
+[[bench]]
+name = "kmeans_bench"
+harness = false

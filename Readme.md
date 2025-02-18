@@ -15,6 +15,18 @@ You can make a commit by using commitizen to follow conventional commits
 cz commmit
 ```
 
+## Development
+
+Testing 
+```bash
+cargo test
+```
+
+Running Benchmarking
+```bash
+cargo bench
+```
+
 ## Running
 To run application you must execute 
 ```bash
