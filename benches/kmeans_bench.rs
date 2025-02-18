@@ -1,15 +1,15 @@
 use criterion::{black_box, criterion_group, criterion_main, BenchmarkId, Criterion};
-use rand::prelude::*;
+use rand::{prelude::*, rng};
 use roloc::{k_means, RgbColor};
 
 fn generate_random_pixels(size: usize) -> Vec<RgbColor> {
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut data = Vec::with_capacity(size);
     for _ in 0..size {
         data.push(RgbColor {
-            r: rng.gen_range(0..=255) as f32,
-            g: rng.gen_range(0..=255) as f32,
-            b: rng.gen_range(0..=255) as f32,
+            r: rng.random_range(0..=255) as f32,
+            g: rng.random_range(0..=255) as f32,
+            b: rng.random_range(0..=255) as f32,
         });
     }
     data

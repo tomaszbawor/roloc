@@ -1,5 +1,6 @@
-use rand::prelude::*;
 use std::error::Error;
+
+use rand::{rng, Rng};
 
 /// Publicly define your RgbColor struct so it can be used externally.
 #[derive(Debug, Clone, Copy)]
@@ -35,12 +36,12 @@ pub fn k_means(
         return Err("Number of clusters (k) must be > 0.".into());
     }
 
-    let mut rng = thread_rng();
+    let mut rng = rng();
     let mut centers = Vec::with_capacity(k);
 
     // 1. Randomly initialize centers
     for _ in 0..k {
-        let random_pixel = data[rng.gen_range(0..data.len())];
+        let random_pixel = data[rng.random_range(0..data.len())];
         centers.push(random_pixel);
     }
 
@@ -66,7 +67,7 @@ pub fn k_means(
         for cluster in clusters {
             if cluster.is_empty() {
                 // If a cluster is empty, pick a random data point as the new center
-                new_centers.push(data[rng.gen_range(0..data.len())]);
+                new_centers.push(data[rng.random_range(0..data.len())]);
             } else {
                 let sum_r: f32 = cluster.iter().map(|c| c.r).sum();
                 let sum_g: f32 = cluster.iter().map(|c| c.g).sum();
