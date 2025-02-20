@@ -2,7 +2,6 @@ use std::error::Error;
 
 use rand::{rng, seq::IndexedRandom, Rng};
 
-/// Publicly define your RgbColor struct so it can be used externally.
 #[derive(Debug, Clone, Copy)]
 pub struct RgbColor {
     pub r: f32,
@@ -23,13 +22,12 @@ impl RgbColor {
     }
 }
 
-/// Publicly define your k_means function.
 pub fn k_means(
-    data: &[RgbColor],
+    all_pixels: &[RgbColor],
     k: usize,
     max_iterations: usize,
 ) -> Result<Vec<RgbColor>, Box<dyn Error>> {
-    if data.is_empty() {
+    if all_pixels.is_empty() {
         return Err("No data found in the image.".into());
     }
     if k == 0 {
@@ -39,31 +37,31 @@ pub fn k_means(
     let mut rng = rng();
 
     // 1. Randomly initialize centers
-    let mut centers: Vec<RgbColor> = data.choose_multiple(&mut rng, k).cloned().collect();
+    let mut centers: Vec<RgbColor> = all_pixels.choose_multiple(&mut rng, k).cloned().collect();
 
     // 2. Repeatedly assign points and recalc centers
     for _ in 0..max_iterations {
         let mut clusters = vec![Vec::new(); k];
 
-        for &pixel in data {
-            let mut min_dist = f32::MAX;
-            let mut closest_center = 0;
+        for &pixel in all_pixels {
+            let mut min_distance = f32::MAX;
+            let mut closest_center_index = 0;
 
             for (i, &center) in centers.iter().enumerate() {
                 let dist = pixel.distance_squared(&center);
-                if dist < min_dist {
-                    min_dist = dist;
-                    closest_center = i;
+                if dist < min_distance {
+                    min_distance = dist;
+                    closest_center_index = i;
                 }
             }
-            clusters[closest_center].push(pixel);
+            clusters[closest_center_index].push(pixel);
         }
 
         let mut new_centers = Vec::with_capacity(k);
         for cluster in clusters {
             if cluster.is_empty() {
                 // If a cluster is empty, pick a random data point as the new center
-                new_centers.push(data[rng.random_range(0..data.len())]);
+                new_centers.push(all_pixels[rng.random_range(0..all_pixels.len())]);
             } else {
                 let sum_r: f32 = cluster.iter().map(|c| c.r).sum();
                 let sum_g: f32 = cluster.iter().map(|c| c.g).sum();
