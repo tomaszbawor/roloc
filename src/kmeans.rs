@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use rand::{rng, Rng};
+use rand::{rng, seq::IndexedRandom, Rng};
 
 /// Publicly define your RgbColor struct so it can be used externally.
 #[derive(Debug, Clone, Copy)]
@@ -37,13 +37,9 @@ pub fn k_means(
     }
 
     let mut rng = rng();
-    let mut centers = Vec::with_capacity(k);
 
     // 1. Randomly initialize centers
-    for _ in 0..k {
-        let random_pixel = data[rng.random_range(0..data.len())];
-        centers.push(random_pixel);
-    }
+    let mut centers: Vec<RgbColor> = data.choose_multiple(&mut rng, k).cloned().collect();
 
     // 2. Repeatedly assign points and recalc centers
     for _ in 0..max_iterations {
