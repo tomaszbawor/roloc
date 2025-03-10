@@ -1,7 +1,7 @@
 use clap::{Arg, Command};
 
 use image::GenericImageView;
-use roloc::{k_means, RgbColor};
+use roloc::{k_means, HexColor, RgbColor};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -67,7 +67,11 @@ fn main() -> Result<(), Box<dyn Error>> {
         println!("SVG palette generated at: {}", output);
     } else {
         // Generate JSON array
-        let hex_values: Vec<String> = clusters.iter().map(|c| c.to_hex()).collect();
+        let hex_values: Vec<String> = clusters
+            .iter()
+            .map(|c| HexColor::from(c))
+            .map(|d| String::from(d))
+            .collect();
         let json_output = serde_json::to_string_pretty(&hex_values)?;
         println!("{}", json_output);
     }
@@ -104,13 +108,13 @@ fn generate_svg(colors: &[RgbColor], output_path: &str) -> Result<(), Box<dyn Er
             y = y_offset,
             w = swatch_width,
             h = swatch_height,
-            color = color.to_hex()
+            color = String::from(HexColor::from(color))
         );
         let text = format!(
             r#"<text x="{x}" y="{y}" class="label">{text}</text>"#,
             x = 5,
             y = y_offset + swatch_height / 2 + (font_size / 2),
-            text = color.to_hex()
+            text = String::from(HexColor::from(color))
         );
         svg_content.push_str(&rect);
         svg_content.push_str("\n");

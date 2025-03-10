@@ -2,25 +2,7 @@ use std::error::Error;
 
 use rand::{rng, seq::IndexedRandom, Rng};
 
-#[derive(Debug, Clone, Copy)]
-pub struct RgbColor {
-    pub r: f32,
-    pub g: f32,
-    pub b: f32,
-}
-
-impl RgbColor {
-    pub fn distance_squared(&self, other: &RgbColor) -> f32 {
-        (self.r - other.r).powi(2) + (self.g - other.g).powi(2) + (self.b - other.b).powi(2)
-    }
-
-    pub fn to_hex(&self) -> String {
-        let r = self.r as u8;
-        let g = self.g as u8;
-        let b = self.b as u8;
-        format!("#{:02X}{:02X}{:02X}", r, g, b)
-    }
-}
+use crate::RgbColor;
 
 pub fn k_means(
     all_pixels: &[RgbColor],
