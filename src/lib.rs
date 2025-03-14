@@ -1,6 +1,8 @@
 pub mod kmeans;
+pub mod median_cutoff;
 
 pub use kmeans::k_means;
+pub use median_cutoff::median_cut;
 
 #[derive(PartialEq, PartialOrd, Eq, Ord)]
 pub struct HexColor {
@@ -9,8 +11,8 @@ pub struct HexColor {
     pub b: u8,
 }
 
-impl From<HexColor> for String {
-    fn from(value: HexColor) -> Self {
+impl From<&HexColor> for String {
+    fn from(value: &HexColor) -> Self {
         format!("#{:02X}{:02X}{:02X}", value.r, value.g, value.b)
     }
 }
