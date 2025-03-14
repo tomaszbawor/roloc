@@ -4,7 +4,7 @@ pub mod median_cutoff;
 pub use kmeans::k_means;
 pub use median_cutoff::median_cut;
 
-#[derive(PartialEq, PartialOrd, Eq, Ord)]
+#[derive(PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub struct HexColor {
     pub r: u8,
     pub g: u8,

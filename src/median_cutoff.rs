@@ -1,19 +1,18 @@
 use std::{collections::VecDeque, error::Error};
 
-use crate::{HexColor, RgbColor};
+use crate::HexColor;
 
-pub fn median_cut(all_pixels: &[RgbColor], k: usize) -> Result<Vec<HexColor>, Box<dyn Error>> {
-    if all_pixels.is_empty() {
+pub fn median_cut(pixels: &[HexColor], k: usize) -> Result<Vec<HexColor>, Box<dyn Error>> {
+    if pixels.is_empty() {
         return Err("No data found in the image.".into());
     }
+
     if k == 0 {
         return Err("Number of clusters (k) must be > 0.".into());
     }
 
-    let hex_pixels: Vec<HexColor> = all_pixels.iter().map(|c| HexColor::from(c)).collect();
     let mut queue: VecDeque<Vec<HexColor>> = VecDeque::new();
-
-    queue.push_back(hex_pixels);
+    queue.push_back(pixels.to_vec());
 
     while queue.len() < k {
         if let Some(group_to_split) = queue.pop_front() {
@@ -23,23 +22,19 @@ pub fn median_cut(all_pixels: &[RgbColor], k: usize) -> Result<Vec<HexColor>, Bo
         }
     }
 
-    let res: Vec<HexColor> = queue
-        .iter()
-        .map(|group| average_color_from_group(group))
-        .collect();
-
+    let res: Vec<HexColor> = queue.iter().map(average_color).collect();
     Ok(res)
 }
 
-fn average_color_from_group(group: &Vec<HexColor>) -> HexColor {
+fn average_color(group: &Vec<HexColor>) -> HexColor {
     let mut red_sum = 0u32;
     let mut green_sum = 0u32;
     let mut blue_sum = 0u32;
 
     for color in group {
-        red_sum = red_sum + color.r as u32;
-        green_sum = green_sum + color.g as u32;
-        blue_sum = blue_sum + color.b as u32;
+        red_sum += color.r as u32;
+        green_sum += color.g as u32;
+        blue_sum += color.b as u32;
     }
 
     HexColor {

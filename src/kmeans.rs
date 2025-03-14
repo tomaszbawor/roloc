@@ -25,7 +25,7 @@ pub fn k_means(
     for _ in 0..max_iterations {
         let mut clusters = vec![Vec::new(); k];
 
-        for &pixel in all_pixels {
+        for pixel in all_pixels {
             let mut min_distance = f32::MAX;
             let mut closest_center_index = 0;
 

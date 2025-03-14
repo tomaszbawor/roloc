@@ -1,7 +1,7 @@
 use clap::{Arg, Command};
 
 use image::GenericImageView;
-use roloc::{k_means, median_cut, median_cutoff, HexColor, RgbColor};
+use roloc::{median_cut, HexColor};
 use std::error::Error;
 use std::fs::File;
 use std::io::Write;
@@ -34,25 +34,25 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .get_matches();
 
-    let k = 16;
-    //let k = matches.get_one::<usize>("colors").unwrap().to_owned();
+    let colors_count: &String = matches.get_one::<String>("colors").unwrap();
+    let k = colors_count.parse::<usize>()?;
     let input_path: &String = matches.get_one("input").unwrap();
     let svg_path = matches.get_one::<String>("svg");
 
     // Load image
-    let img = image::open(&input_path)?;
+    let img = image::open(input_path)?;
     let (width, height) = img.dimensions();
 
     // Gather all pixels into a vector (in float form)
-    let mut pixels = Vec::new();
+    let mut pixels: Vec<HexColor> = Vec::new();
     for y in 0..height {
         for x in 0..width {
             let pixel = img.get_pixel(x, y);
-            // Convert to f32 for K-means
-            pixels.push(RgbColor {
-                r: pixel[0] as f32,
-                g: pixel[1] as f32,
-                b: pixel[2] as f32,
+
+            pixels.push(HexColor {
+                r: pixel[0],
+                g: pixel[1],
+                b: pixel[2],
             });
         }
     }
@@ -61,12 +61,11 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Format the output
     if let Some(output) = svg_path {
-        // Generate an SVG
         generate_svg(&clusters, output)?;
         println!("SVG palette generated at: {}", output);
     } else {
         // Generate JSON array
-        let hex_values: Vec<String> = clusters.iter().map(|d| String::from(d)).collect();
+        let hex_values: Vec<String> = clusters.iter().map(String::from).collect();
         let json_output = serde_json::to_string_pretty(&hex_values)?;
         println!("{}", json_output);
     }
@@ -112,9 +111,9 @@ fn generate_svg(colors: &[HexColor], output_path: &str) -> Result<(), Box<dyn Er
             text = String::from(color)
         );
         svg_content.push_str(&rect);
-        svg_content.push_str("\n");
+        svg_content.push('\n');
         svg_content.push_str(&text);
-        svg_content.push_str("\n");
+        svg_content.push('\n');
     }
 
     svg_content.push_str("</svg>\n");
