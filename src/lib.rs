@@ -1,8 +1,8 @@
-pub mod kmeans;
-pub mod median_cutoff;
+mod generators;
+mod parsers;
 
-pub use kmeans::k_means;
-pub use median_cutoff::median_cut;
+pub use generators::*;
+pub use parsers::*;
 
 #[derive(PartialEq, PartialOrd, Eq, Ord, Clone)]
 pub struct HexColor {
