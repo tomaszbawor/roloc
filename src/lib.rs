@@ -4,7 +4,7 @@ mod parsers;
 pub use generators::*;
 pub use parsers::*;
 
-#[derive(PartialEq, PartialOrd, Eq, Ord, Clone)]
+#[derive(PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
 pub struct HexColor {
     pub r: u8,
     pub g: u8,

@@ -1,8 +1,8 @@
 use clap::{Arg, Command};
 
 use image::GenericImageView;
-use roloc::{median_cut, HexColor, PalleteParser, SvgParser};
-use std::error::Error;
+use roloc::{median_cut, HexColor, JsonParser, OutputFormat, PalleteParser, SvgParser};
+use std::{error::Error, str::FromStr};
 
 fn main() -> Result<(), Box<dyn Error>> {
     let matches = Command::new("roloc")
@@ -24,17 +24,29 @@ fn main() -> Result<(), Box<dyn Error>> {
                 .default_value("5"),
         )
         .arg(
-            Arg::new("svg")
+            Arg::new("output")
                 .short('s')
-                .long("svg")
-                .help("Generate an SVG palette instead of JSON (output file path)"),
+                .long("o")
+                .help("Output file path, when not provided the pallete will be printed to stdout"),
+        )
+        .arg(
+            Arg::new("format")
+                .short('f')
+                .long("format")
+                .help("Format of the output (devault SVG)")
+                .default_value("svg"),
         )
         .get_matches();
 
     let colors_count: &String = matches.get_one::<String>("colors").unwrap();
     let k = colors_count.parse::<usize>()?;
     let input_path: &String = matches.get_one("input").unwrap();
-    let svg_path = matches.get_one::<String>("svg");
+    let output_file_path = matches.get_one::<String>("output");
+    let format = matches
+        .get_one::<String>("format")
+        .map(|ss| OutputFormat::from_str(ss))
+        .unwrap()
+        .unwrap();
 
     // Load image
     let img = image::open(input_path)?;
@@ -56,7 +68,10 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     let clusters = median_cut(&pixels, k)?;
 
-    SvgParser::parse(&clusters, svg_path.map(|x| x.as_str()))?;
+    match format {
+        OutputFormat::Svg => SvgParser::parse(&clusters, output_file_path.map(|x| x.as_str()))?,
+        OutputFormat::Json => JsonParser::parse(&clusters, output_file_path.map(|x| x.as_str()))?,
+    }
 
     Ok(())
 }
