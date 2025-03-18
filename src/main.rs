@@ -25,8 +25,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         )
         .arg(
             Arg::new("output")
-                .short('s')
-                .long("o")
+                .short('o')
+                .long("output")
                 .help("Output file path, when not provided the pallete will be printed to stdout"),
         )
         .arg(
